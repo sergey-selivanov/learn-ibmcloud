@@ -1,1 +1,8 @@
+bin/
+.classpath
 .project
+.gradle/
+.settings/
+build/
+/gradle-local.properties
+/gradle-ibmcloud.properties

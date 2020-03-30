@@ -1,0 +1,28 @@
+plugins {
+    id 'org.ajoberstar.reckon' version '0.12.0'
+
+    id 'com.github.ben-manes.versions' version '0.28.0'
+    id 'net.saliman.properties' version '1.5.1'
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+
+//    apply plugin: 'com.github.ben-manes.versions'
+//    apply plugin: 'net.saliman.properties'
+}
+
+subprojects{
+    apply plugin: 'eclipse'
+}
+
+if(!project.hasProperty('reckon.scope')){
+    project.ext.'reckon.scope' = 'patch'    // override default 'minor'
+}
+
+reckon {
+    scopeFromProp()
+    stageFromProp('dev', 'final')
+}

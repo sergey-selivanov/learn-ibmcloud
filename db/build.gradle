@@ -1,0 +1,38 @@
+/**
+ *    To properly substitute options, invoke specifying target environment: -PenvironmentName=cloud
+ *    To apply repeatable scripts from sq-migrations-dev, add -Pdevsql
+ *
+ *    gradle -PenvironmentName=mistral flywayInfo
+ *    gradle -PenvironmentName=mistral -Pdevsql flywayMigrate
+ *
+ */
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        // https://mvnrepository.com/artifact/com.ibm.db2/jcc
+        classpath group: 'com.ibm.db2', name: 'jcc', version: '11.5.0.0'
+    }
+}
+
+
+plugins {
+    id 'org.flywaydb.flyway' version '6.3.2' // broken drop table if exists
+    //id 'org.flywaydb.flyway' version '6.2.2'
+}
+
+flyway {
+    url = project.'deploy.db.url'
+    user = project.'deploy.db.login'
+    password = project.'deploy.db.password'
+
+    if (project.hasProperty('devsql')) {
+        locations = ["filesystem:${projectDir}/sql-migrations", "filesystem:${projectDir}/sql-migrations-dev"]
+    }
+    else {
+        locations = ["filesystem:${projectDir}/sql-migrations"]
+    }
+
+}

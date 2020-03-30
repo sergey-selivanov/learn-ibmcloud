@@ -1,0 +1,5 @@
+rootProject.name = 'learn-ibmcloud'
+
+include 'server', 'db'
+
+project(':server').name = 'ibmcloud-server'
