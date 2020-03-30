@@ -1,0 +1,105 @@
+@CHARSET "ISO-8859-1";
+
+* {
+/*    margin: 0px;
+    padding: 0px;
+
+    */
+}
+
+body{
+    font-size: 16px;
+    font-family: georgia, serif;
+    border: none;
+}
+
+.note{
+    font-size: 12px;
+}
+
+.smaller{
+    font-size: smaller;
+}
+
+
+.smallergray{
+    font-size: smaller;
+    color: gray;
+}
+
+div#wrapper{
+    width: 100%;
+}
+
+div#homelink{
+    top: 0;
+    position: absolute;
+    margin-left: 20px;
+    margin-top: 10px;
+}
+
+a#homelogolink{
+    color: white;
+    text-decoration: none;
+    background-color: transparent;
+    font-family: georgia, serif;
+}
+
+div#header{
+    top: 0;
+    text-align: left;
+    background: url("/images/header-bkgr.png");
+    height: 50px;
+}
+
+div#homelogo{
+    width: 100px;
+    margin: 0px;
+}
+
+div#main{
+    text-align: left;
+    margin-top: 15px;
+    margin-left: 20px;
+    margin-right: 20px;
+    font-family: georgia, serif;
+}
+
+div#footer{
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-family: georgia, serif;
+}
+
+.sectiontitle{
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font: larger;
+    font-size: larger;
+}
+
+.section{
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.sectionfooter{
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.app-thumbnail{
+    width: 200px;
+    margin-left: 15px;
+    margin-right: 15px;
+    cursor: pointer;
+}
+
+.separator{
+    clear: left;
+}
+
+.even{
+    background: #f0f0f0;
+}

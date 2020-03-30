@@ -1,0 +1,22 @@
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+    version="2.1">
+
+    <persistence-unit name="billing">
+        <class>sssii.billing.common.entity.Customer</class>
+        <class>sssii.billing.common.entity.Project</class>
+        <class>sssii.billing.common.entity.Invoice</class>
+        <class>sssii.billing.common.entity.InvoiceItem</class>
+        <class>sssii.billing.common.entity.Setting</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+        <properties></properties>
+
+    </persistence-unit>
+
+<!--
+https://stackoverflow.com/questions/16204565/jpa-entity-specify-persistence-unit
+https://developer.jboss.org/thread/237078
+-->
+</persistence>

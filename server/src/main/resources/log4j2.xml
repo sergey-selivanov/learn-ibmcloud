@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+             <PatternLayout pattern="%5p [%t] (%F:%L) - %m%n" />
+        </Console>
+
+        <RollingFile name="Rolling"
+
+            fileName="${sys:user.home}/logs/billing-@environment.name@.log"
+            filePattern="$${sys:user.home}/logs/billing-@environment.name@-%d{yyyyMMMdd-HH-mm}.%i.log">
+
+            <PatternLayout pattern="%d %5p [%t] (%F:%L) - %m%n" />
+
+            <Policies>
+                <SizeBasedTriggeringPolicy size="1 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+
+    </Appenders>
+
+    <Loggers>
+    <!-- TRACE, DEBUG, INFO, WARN, ERROR, ALL or OFF -->
+        <Root level="debug">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="Rolling" />
+        </Root>
+
+        <!-- https://docs.jboss.org/hibernate/orm/4.3/manual/en-US/html/ch03.html#configuration-logging -->
+        <logger name="org.hibernate" level="info"/>
+        <!--
+        <logger name="org.hibernate.SQL" level="debug"/>
+         -->
+
+        <logger name="com.mchange.v2.c3p0" level="info"/>
+        <logger name="com.mchange.v2.log" level="info"/>
+        <logger name="com.mchange.v2.cfg" level="info"/>
+        <logger name="com.mchange.v2.resourcepool" level="info"/>
+    </Loggers>
+</Configuration>

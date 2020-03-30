@@ -1,1 +1,191 @@
+buildscript {
+    repositories {
+        jcenter()
+        // https://stackoverflow.com/questions/31314373/dependency-error-in-jasper-reports-from-itext
+        maven { url "http://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts" }
+        maven { url "http://jaspersoft.jfrog.io/jaspersoft/jr-ce-releases" } // functions
+
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+
+    dependencies {
+
+        // https://github.com/gmazelier/gradle-jasperreports
+        classpath 'com.github.gmazelier:jasperreports-gradle-plugin:0.4'
+        classpath 'net.sf.jasperreports:jasperreports:6.12.2'
+        classpath 'net.sf.jasperreports:jasperreports-functions:6.12.2'
+
+        classpath 'gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:2.0.0'
+    }
+}
+
+repositories {
+    jcenter()
+
+    // https://community.jaspersoft.com/questions/839878/why-jasperreports-functions-not-maven-repository
+    // https://jaspersoft.jfrog.io/jaspersoft/webapp/#/artifacts/browse/tree/General/third-party-ce-artifacts
+    //maven { url "http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts/" }
+    maven { url "http://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts" }
+    maven { url "http://jaspersoft.jfrog.io/jaspersoft/jr-ce-releases" }
+}
+
+
+//plugins {
+//  id "com.github.gmazelier.jasperreports" version "0.3.2"
+//}
+
 apply plugin: 'war'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'net.saliman.properties'
+apply plugin: 'com.github.gmazelier.jasperreports'
+apply plugin: 'com.github.spotbugs'
+
+import org.apache.tools.ant.filters.ReplaceTokens
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+//def a = 'aa'
+//if(a == 'aa') {
+if(environmentName == 'mistral-jira') {
+    dependencies {
+        //runtime project(':billing-jira')
+    }
+}
+else {
+    dependencies {
+        //runtime project(':billing-jobcard')
+    }
+}
+
+dependencies {
+    providedCompile 'javax.servlet:javax.servlet-api:4.0.1'    // tomcat 9
+
+//    compile project(':billing-common')
+
+    compile 'org.glassfish.jersey.containers:jersey-container-servlet:2.30.1'
+    compile 'org.glassfish.jersey.media:jersey-media-moxy:2.30.1'
+    compile 'org.glassfish.jersey.media:jersey-media-multipart:2.30.1'
+    compile 'org.glassfish.jersey.inject:jersey-hk2:2.30.1'
+
+    compile 'org.mariadb.jdbc:mariadb-java-client:2.6.0'
+    //compile group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
+
+    compile 'org.hibernate:hibernate-core:5.4.13.Final'
+    compile 'org.hibernate:hibernate-c3p0:5.4.13.Final'
+    compile 'com.mchange:c3p0:0.9.5.5'
+
+    compile group: 'net.sf.jasperreports', name: 'jasperreports', version: '6.12.2'
+    compile group: 'net.sf.jasperreports', name: 'jasperreports-functions', version: '6.12.2' // jasper repo
+    compile group: 'net.sf.jasperreports', name: 'jasperreports-fonts', version: '6.12.2'
+
+//    compile group: 'org.flywaydb', name: 'flyway-core', version: '5.1.0'
+
+    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.13.1'
+    compile 'org.apache.logging.log4j:log4j-web:2.13.1'
+
+//    compile 'net.bull.javamelody:javamelody-core:1.72.0'
+//    compile 'org.jrobin:jrobin:1.5.9'
+
+    testCompile 'junit:junit:4.13'
+}
+
+
+// Tomcat version 8.0 implements the Servlet 3.1 and JavaServer Pages 2.3
+eclipse {
+    wtp {
+        facet {
+          facet name: 'jst.web', version: '3.1'
+          facet name: 'java', version: '1.8'
+          facet name: 'wst.jsdt.web', version: '1.0'
+        }
+    }
+}
+
+jasperreports {
+    srcDir = file('../jasperReports')
+    outDir = file("${project.buildDir}/resources/main")    // TODO own separate dir, add to war
+}
+
+//tasks.release.dependsOn 'build'
+
+// set displayed revision from hudson env vars
+// run 'clean' in hudson build otherwise when resources up-to-date, will not be updated
+def val = System.getenv('BUILD_NUMBER')
+def bn = (val == null ? 'undefined' : val)
+def bnn = (val == null ? '0' : val)
+
+//val = System.getenv('BUILD_ID')
+//def bid = (val == null ? 'undefined' : val)
+
+val = System.getenv('USER');    // linux
+if(val == null){
+    val = System.getenv('USERNAME');    // linux under glassfish, windows
+}
+
+def builduser = (val == null ? 'undefined' : val)
+def buildhost = InetAddress.localHost.hostName
+
+processResources {
+
+    filter(ReplaceTokens,
+        tokens:[
+            'git.commit': repo.head().abbreviatedId,
+            'git.branch': repo.branch.current.name,
+            'git.date': repo.head().date.toString(),
+            'build.date': new java.util.Date().toString(),
+            'build.host': builduser + '@' + buildhost,
+            'version': project.version.toString(),
+            'jenkins.build.number': bn,
+            'environment.name': environmentName
+            ])
+
+    exclude '**/options-template.properties'
+    exclude '**/options.properties', '**/options-jira.properties', '**/options-jobcard.properties'
+    exclude '**/*.jasper'    // TODO move compiled report(s) to some subdir
+}
+
+task adjustEnvResources(type: Copy) {
+
+    from project.sourceSets.main.resources
+    include 'options-template.properties'
+    into project.sourceSets.main.output.resourcesDir
+    filter(ReplaceTokens, tokens: project.filterTokens)
+    rename 'options-template.properties', 'options.properties'
+}
+
+//task compilereports{
+//    JasperCompileManager.compileReportToFile("jasperReports/reports/invoice.jrxml","our_compiled_template.jasper")
+//}
+
+compileJava.dependsOn adjustEnvResources
+
+compileJava.dependsOn compileAllReports
+
+war {
+    println "env name: " + environmentName
+    println "base name: " + baseName
+    println "extension: " + extension
+    println "version:" + version.toString()
+
+    archiveName = baseName + '-' + version.toString() + '-' + environmentName + '.' + extension
+
+    println "war archive name: " + archiveName
+}
+
+//checkstyle {
+//    ignoreFailures = true
+//    sourceSets = [ project.sourceSets.main ]
+//}
+//
+
+spotbugs {
+    ignoreFailures = true
+    sourceSets = [ project.sourceSets.main ]
+//    excludeFilter = file("$projectDir/config/findbugs/excludeFilter.xml")
+}
+
+test {
+    // do not perform unit tests
+    exclude 'sssii/billing/**'
+}
