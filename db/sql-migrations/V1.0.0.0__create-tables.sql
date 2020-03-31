@@ -1,4 +1,5 @@
--- drop table if exists Customer;
+drop table if exists Customer;
+
 create table Customer (
     id int not null primary key,
 
@@ -11,14 +12,14 @@ create table Customer (
 );
 
 
--- drop table if exists Project;
+drop table if exists Project;
 create table Project (
     id int not null primary key,
 
     name varchar(255) not null default '',
     customerId int, -- allow project without customer
     defaultRate decimal(18, 4) not null default 0,
-    createdDateUTC date not null,    -- no fractional seconds by default here. This is original creation date.
+    createdDateUTC date not null,
     isActive boolean not null default 1,
 
     originalId int ,
@@ -28,7 +29,7 @@ create table Project (
 );
 
 
--- drop table if exists Settings;
+drop table if exists Settings;
 create table Settings (
     id int not null primary key,
 
@@ -42,7 +43,6 @@ insert into Settings (id, name, val) values
 insert into Settings (id, name, val) values
 (2, 'PAYMENT_TERMS', 'On receipt');
 
--- mail-check-to, en dash
 insert into Settings (id, name, val) values
 (3, 'PAYMENT_RECIPIENT_ADDRESS', 'Company Inc.
 Attn: ABCD - J. Doe
