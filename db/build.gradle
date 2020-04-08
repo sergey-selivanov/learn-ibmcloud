@@ -19,8 +19,8 @@ buildscript {
 
 
 plugins {
-    id 'org.flywaydb.flyway' version '6.3.2' // broken drop table if exists
-    //id 'org.flywaydb.flyway' version '6.2.2'
+    //id 'org.flywaydb.flyway' version '6.3.2' // broken drop table if exists
+    id 'org.flywaydb.flyway' version '6.3.3'
 }
 
 flyway {

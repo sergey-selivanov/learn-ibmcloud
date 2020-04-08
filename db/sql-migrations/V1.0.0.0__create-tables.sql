@@ -1,4 +1,6 @@
-drop table if exists Customer;
+-- 11.5 has 'drop table if exists' while 11.1 on cloud does not
+
+-- drop table if exists Customer;
 
 create table Customer (
     id int not null primary key,
@@ -12,7 +14,7 @@ create table Customer (
 );
 
 
-drop table if exists Project;
+-- drop table if exists Project;
 create table Project (
     id int not null primary key,
 
@@ -29,7 +31,7 @@ create table Project (
 );
 
 
-drop table if exists Settings;
+-- drop table if exists Settings;
 create table Settings (
     id int not null primary key,
 
